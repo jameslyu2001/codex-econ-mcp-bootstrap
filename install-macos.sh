@@ -136,7 +136,7 @@ expected = {
     "econ_world_bank", "econ_world_bank_data360", "econ_un_comtrade",
     "econ_alpha_vantage", "econ_bea", "econ_census", "econ_data_commons",
     "econ_financial_datasets", "econ_fred", "econ_nasdaq_data_link",
-    "econ_sec_edgar", "econ_tam",
+    "econ_sec_edgar", "econ_tam", "stata-mcp",
 }
 data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8-sig"))
 entries = data if isinstance(data, list) else data.get("mcps", data.get("servers", data.get("entries", [])))
@@ -181,8 +181,8 @@ for entry in entries:
     seen.add(service_id)
     rows.append((service_id, source_type, source_url, commit or "-", directory or "-", package_spec or "-"))
 
-if seen != expected or len(rows) != 17:
-    raise SystemExit("manifest must contain exactly the expected 17 MCP ids")
+if seen != expected or len(rows) != 18:
+    raise SystemExit("manifest must contain exactly the expected 18 MCP ids")
 with Path(sys.argv[2]).open("w", encoding="utf-8", newline="\n") as handle:
     for row in rows:
         handle.write("\t".join(row) + "\n")
@@ -322,7 +322,9 @@ node_build() {
 
 uv_sync() {
   project=$1
-  if [ -f "$project/uv.lock" ]; then
+  if [ -f "$project/uv.lock" ] &&
+    git -C "$project" ls-files --error-unmatch uv.lock >/dev/null 2>&1
+  then
     uv --directory "$project" sync --frozen
   else
     uv --directory "$project" sync
@@ -352,7 +354,7 @@ build_service() {
     econ_data_commons)
       uv_sync "$project/packages/datacommons-mcp"
       ;;
-    econ_eurostat|econ_imf|econ_world_bank|econ_world_bank_data360|econ_alpha_vantage|econ_financial_datasets|econ_nasdaq_data_link|econ_sec_edgar)
+    econ_eurostat|econ_imf|econ_world_bank|econ_world_bank_data360|econ_alpha_vantage|econ_financial_datasets|econ_nasdaq_data_link|econ_sec_edgar|stata-mcp)
       uv_sync "$project"
       ;;
     econ_census)

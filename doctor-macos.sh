@@ -79,7 +79,7 @@ from pathlib import Path
 data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8-sig"))
 entries = data.get("mcps", data.get("servers", data.get("entries", [])))
 ids = [entry.get("id", entry.get("name")) for entry in entries]
-if len(ids) != 17 or len(set(ids)) != 17:
+if len(ids) != 18 or len(set(ids)) != 18:
     raise SystemExit(1)
 for entry in entries:
     source = entry.get("source", {})
@@ -95,7 +95,7 @@ for entry in entries:
         raise SystemExit(1)
 PY
 then
-  ok 'manifest has 17 fully locked MCP entries'
+  ok 'manifest has 18 fully locked MCP entries'
 else
   fail 'manifest lock metadata is invalid'
 fi
@@ -147,6 +147,15 @@ check_artifact econ_fred 'fred-mcp-server/build/index.js'
 check_artifact econ_nasdaq_data_link 'nasdaq-data-link-mcp/.venv'
 check_artifact econ_sec_edgar 'sec-edgar-mcp/.venv'
 check_artifact econ_tam 'TAM-MCP-Server/dist/stdio-simple.js'
+check_artifact stata-mcp 'mcp-for-stata/.venv'
+if [ -d "$SERVERS_ROOT/mcp-for-stata/.venv" ] &&
+  uv --directory "$SERVERS_ROOT/mcp-for-stata" run --frozen \
+    stata-mcp doctor --check stata_cli --json >/dev/null 2>&1
+then
+  ok 'stata-mcp can locate Stata'
+else
+  fail 'stata-mcp cannot locate Stata; set STATA_CLI or ~/.statamcp/config.toml'
+fi
 if command -v npx >/dev/null 2>&1; then ok 'econ_un_comtrade fixed-package runtime is available'; else fail 'econ_un_comtrade requires npx'; fi
 if [ -x "$CODEX_ROOT/launchers/econ-mcp-launcher.sh" ]; then ok 'installed launcher is executable'; else fail 'installed launcher is missing or not executable'; fi
 
@@ -161,7 +170,7 @@ for service_id in \
   econ_bls econ_ecb econ_eurostat econ_imf econ_oecd econ_world_bank \
   econ_world_bank_data360 econ_un_comtrade econ_alpha_vantage econ_bea \
   econ_census econ_data_commons econ_financial_datasets econ_fred \
-  econ_nasdaq_data_link econ_sec_edgar econ_tam
+  econ_nasdaq_data_link econ_sec_edgar econ_tam stata-mcp
 do
   if codex mcp get "$service_id" >/dev/null 2>&1; then
     if registration_expected "$service_id"; then ok "$service_id is registered"; else fail "$service_id is registered without its optional key"; fi

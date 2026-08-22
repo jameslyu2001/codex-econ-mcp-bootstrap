@@ -5,7 +5,7 @@ param(
         'econ_world_bank', 'econ_world_bank_data360', 'econ_un_comtrade',
         'econ_alpha_vantage', 'econ_bea', 'econ_census', 'econ_data_commons',
         'econ_financial_datasets', 'econ_fred', 'econ_nasdaq_data_link',
-        'econ_sec_edgar', 'econ_tam')]
+        'econ_sec_edgar', 'econ_tam', 'stata-mcp')]
     [Alias('ServerName')]
     [string]$Name,
     [string]$CodexRoot = (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.codex')
@@ -130,5 +130,9 @@ switch ($Name) {
     }
     'econ_tam' {
         Start-Mcp (Find-Program @('node.exe', 'node')) @((Need-File (Join-Path $mcpRoot 'TAM-MCP-Server\dist\stdio-simple.js')))
+    }
+    'stata-mcp' {
+        Start-Mcp (Find-Program @('uv.exe', 'uv')) @(
+            '--directory', (Join-Path $mcpRoot 'mcp-for-stata'), 'run', '--frozen', 'stata-mcp')
     }
 }

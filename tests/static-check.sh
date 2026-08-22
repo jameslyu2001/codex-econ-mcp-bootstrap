@@ -9,6 +9,7 @@ DOCTOR="$REPO_ROOT/doctor-macos.sh"
 LAUNCHER="$REPO_ROOT/launchers/econ-mcp-launcher.sh"
 STATIC_TEST="$REPO_ROOT/tests/static-check.sh"
 PATCH_FILE="$REPO_ROOT/patches/census-api-key.patch"
+MANIFEST="$REPO_ROOT/manifests/mcps.lock.json"
 
 fail() {
   printf 'static-check: FAIL: %s\n' "$*" >&2
@@ -20,7 +21,8 @@ for file in "$INSTALLER" "$DOCTOR" "$LAUNCHER" "$STATIC_TEST"; do
   bash -n "$file" || fail "Bash syntax error: $file"
 done
 
-python3 - "$INSTALLER" "$DOCTOR" "$LAUNCHER" "$STATIC_TEST" "$PATCH_FILE" <<'PY'
+python3 - "$INSTALLER" "$DOCTOR" "$LAUNCHER" "$STATIC_TEST" "$PATCH_FILE" "$MANIFEST" <<'PY'
+import json
 import re
 import sys
 from pathlib import Path
@@ -38,6 +40,7 @@ installer = texts["install-macos.sh"]
 doctor = texts["doctor-macos.sh"]
 launcher = texts["econ-mcp-launcher.sh"]
 patch_text = texts["census-api-key.patch"]
+manifest = json.loads(texts["mcps.lock.json"])
 for option in ("--api-keys-file", "--codex-root", "--skip-census-init", "--dry-run", "--non-interactive"):
     if option not in installer or option not in doctor:
         raise SystemExit("missing CLI option: %s" % option)
@@ -63,13 +66,26 @@ expected = {
     "econ_world_bank", "econ_world_bank_data360", "econ_un_comtrade",
     "econ_alpha_vantage", "econ_bea", "econ_census", "econ_data_commons",
     "econ_financial_datasets", "econ_fred", "econ_nasdaq_data_link",
-    "econ_sec_edgar", "econ_tam",
+    "econ_sec_edgar", "econ_tam", "stata-mcp",
 }
-case_ids = set(re.findall(r"^  (econ_[a-z0-9_]+)\)\s*$", launcher, re.M))
+entries = manifest.get("mcps", [])
+if len(entries) != 18 or {entry.get("id") for entry in entries} != expected:
+    raise SystemExit("manifest does not contain the expected 18 MCP ids")
+stata = next(entry for entry in entries if entry.get("id") == "stata-mcp")
+if stata.get("source", {}).get("url") != "https://github.com/SepineTam/mcp-for-stata.git":
+    raise SystemExit("stata-mcp source URL is unexpected")
+if stata.get("source", {}).get("commit") != "e5b25dc90058001c942fb7ef851637c9f5728486":
+    raise SystemExit("stata-mcp commit differs from the reviewed lock")
+if stata.get("source", {}).get("upstream_version") != "1.22.0":
+    raise SystemExit("stata-mcp upstream version is invalid")
+for platform in ("windows", "macos"):
+    if "--frozen" not in stata.get("runtime", {}).get(platform, {}).get("args", []):
+        raise SystemExit("stata-mcp %s runtime is not frozen" % platform)
+case_ids = set(re.findall(r"^  ((?:econ_[a-z0-9_]+)|stata-mcp)\)\s*$", launcher, re.M))
 if case_ids != expected:
     raise SystemExit("launcher ids differ: missing=%s extra=%s" % (sorted(expected-case_ids), sorted(case_ids-expected)))
-if len(re.findall(r"^\s+exec\s", launcher, re.M)) < 17:
-    raise SystemExit("launcher lacks 17 exec paths")
+if len(re.findall(r"^\s+exec\s", launcher, re.M)) < 18:
+    raise SystemExit("launcher lacks 18 exec paths")
 if re.search(r"(^|\n)\s*set\s+[^\n]*x", installer + "\n" + launcher):
     raise SystemExit("shell xtrace must never be enabled")
 if re.search(r"(^|\n)\s*(echo|printf)\b(?![^\n]*>&2)", launcher):
@@ -87,4 +103,4 @@ for name, text in texts.items():
         raise SystemExit("possible hard-coded secret in %s" % name)
 PY
 
-printf 'static-check: PASS (Bash syntax, 17 launch targets, secret safety, Census patching)\n'
+printf 'static-check: PASS (Bash syntax, 18 launch targets, secret safety, Census patching)\n'

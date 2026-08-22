@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_at": "2026-08-22",
-  "description": "Cross-platform source and runtime lock for 17 Codex economic-data MCP servers.",
+  "description": "Cross-platform source and runtime lock for 18 Codex economic-data and Stata MCP servers.",
   "contains_secret_values": false,
   "install_roots": {
     "windows": "%USERPROFILE%\\.codex\\mcp-servers\\economic-data",
@@ -10,14 +10,15 @@
   "codex": {
     "config_path": "~/.codex/config.toml",
     "managed_server_prefix": "econ_",
+    "managed_server_exceptions": ["stata-mcp"],
     "documentation": "https://developers.openai.com/codex/mcp/"
   },
   "reproducibility": {
-    "git_commit_locked": 16,
+    "git_commit_locked": 17,
     "package_version_locked": 1,
     "source_known_commit_unknown": 0,
     "notes": [
-      "All Git sources are pinned to full 40-character commits.",
+      "All 17 Git sources are pinned to full 40-character commits.",
       "UN Comtrade is locked by npm package version 0.1.5 rather than by a Git commit."
     ]
   },
@@ -535,6 +536,38 @@
           "FRED_API_KEY",
           "NASDAQ_DATA_LINK_API_KEY"
         ]
+      }
+    },
+    {
+      "id": "stata-mcp",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/SepineTam/mcp-for-stata.git",
+        "commit": "e5b25dc90058001c942fb7ef851637c9f5728486",
+        "checkout_dir": "mcp-for-stata",
+        "upstream_version": "1.22.0",
+        "release_tag": "v1.22.0",
+        "license": "AGPL-3.0"
+      },
+      "setup": {
+        "working_dir": "{install_root}/mcp-for-stata",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11", "licensed Stata installation"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\mcp-for-stata", "run", "--frozen", "stata-mcp"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/mcp-for-stata", "run", "--frozen", "stata-mcp"]
+        },
+        "secret_env": [],
+        "optional_env": ["STATA_CLI", "STATA_MCP__CWD"],
+        "user_config": "~/.statamcp/config.toml"
       }
     }
   ]

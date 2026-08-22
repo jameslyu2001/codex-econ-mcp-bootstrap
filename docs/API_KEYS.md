@@ -26,7 +26,7 @@
 
 ## 无需 API key 的 MCP
 
-`econ_ecb`、`econ_eurostat`、`econ_imf`、`econ_oecd` 和 `econ_world_bank` 不需要在当前配置中提供 API key。
+`econ_ecb`、`econ_eurostat`、`econ_imf`、`econ_oecd`、`econ_world_bank` 和 `stata-mcp` 不需要在当前配置中提供 API key。`stata-mcp` 需要本机已授权的 Stata；可选的 `STATA_CLI` 是可执行文件路径，不是凭据。
 
 `econ_world_bank_data360` 使用两个非秘密的服务地址变量：
 

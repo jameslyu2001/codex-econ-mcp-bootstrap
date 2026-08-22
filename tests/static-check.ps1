@@ -15,7 +15,7 @@ $expectedNames = @(
     'econ_world_bank', 'econ_world_bank_data360', 'econ_un_comtrade',
     'econ_alpha_vantage', 'econ_bea', 'econ_census', 'econ_data_commons',
     'econ_financial_datasets', 'econ_fred', 'econ_nasdaq_data_link',
-    'econ_sec_edgar', 'econ_tam')
+    'econ_sec_edgar', 'econ_tam', 'stata-mcp')
 
 foreach ($relativePath in $requiredFiles) {
     if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $relativePath) -PathType Leaf)) {
@@ -31,7 +31,7 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         if ($null -eq $entryProperty) { throw 'Manifest has no mcps or servers array.' }
         $entries = @($entryProperty.Value)
         $names = @($entries | ForEach-Object { ([string]$_.id).ToLowerInvariant() })
-        if ($entries.Count -ne 17) { $failures.Add("Manifest contains $($entries.Count) entries instead of 17.") }
+        if ($entries.Count -ne 18) { $failures.Add("Manifest contains $($entries.Count) entries instead of 18.") }
         if (@($names | Select-Object -Unique).Count -ne $names.Count) { $failures.Add('Manifest contains duplicate MCP names.') }
         foreach ($name in $expectedNames) {
             if ($names -notcontains $name) { $failures.Add("Manifest is missing MCP: $name") }
@@ -50,6 +50,28 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
                 if ($commit -notmatch '^[0-9a-fA-F]{40}$') {
                     $failures.Add("MCP is not pinned to a full Git commit: $($entry.id)")
                 }
+            }
+        }
+        $stataEntry = $entries | Where-Object { $_.id -eq 'stata-mcp' } | Select-Object -First 1
+        if ($null -eq $stataEntry) {
+            $failures.Add('stata-mcp lock entry is missing.')
+        }
+        else {
+            if ($stataEntry.source.url -ne 'https://github.com/SepineTam/mcp-for-stata.git') {
+                $failures.Add('stata-mcp source URL is unexpected.')
+            }
+            if ($stataEntry.source.commit -ne 'e5b25dc90058001c942fb7ef851637c9f5728486') {
+                $failures.Add('stata-mcp commit differs from the reviewed lock.')
+            }
+            if ($stataEntry.source.upstream_version -ne '1.22.0' -or $stataEntry.source.license -ne 'AGPL-3.0') {
+                $failures.Add('stata-mcp version or license metadata is invalid.')
+            }
+            if (@($stataEntry.setup.commands) -notcontains 'uv sync') {
+                $failures.Add('stata-mcp setup must use uv sync.')
+            }
+            if (@($stataEntry.runtime.windows.args) -notcontains '--frozen' -or
+                @($stataEntry.runtime.macos.args) -notcontains '--frozen') {
+                $failures.Add('stata-mcp launch commands must use the generated lock with --frozen.')
             }
         }
     }

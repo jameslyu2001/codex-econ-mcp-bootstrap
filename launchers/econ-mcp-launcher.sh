@@ -109,6 +109,9 @@ case "$SERVICE_ID" in
   econ_tam)
     exec node "$SERVERS_ROOT/TAM-MCP-Server/dist/stdio-simple.js"
     ;;
+  stata-mcp)
+    exec uv --directory "$SERVERS_ROOT/mcp-for-stata" run --frozen stata-mcp
+    ;;
   *)
     error "unknown service: $SERVICE_ID"
     ;;
