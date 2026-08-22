@@ -1,0 +1,541 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-22",
+  "description": "Cross-platform source and runtime lock for 17 Codex economic-data MCP servers.",
+  "contains_secret_values": false,
+  "install_roots": {
+    "windows": "%USERPROFILE%\\.codex\\mcp-servers\\economic-data",
+    "macos": "$HOME/.codex/mcp-servers/economic-data"
+  },
+  "codex": {
+    "config_path": "~/.codex/config.toml",
+    "managed_server_prefix": "econ_",
+    "documentation": "https://developers.openai.com/codex/mcp/"
+  },
+  "reproducibility": {
+    "git_commit_locked": 16,
+    "package_version_locked": 1,
+    "source_known_commit_unknown": 0,
+    "notes": [
+      "All Git sources are pinned to full 40-character commits.",
+      "UN Comtrade is locked by npm package version 0.1.5 rather than by a Git commit."
+    ]
+  },
+  "mcps": [
+    {
+      "id": "econ_bls",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/shawndrake2/mcp-bls.git",
+        "commit": "ed9473aecf60f445e4e11c90a90a0c383cedc5a2",
+        "checkout_dir": "mcp-bls"
+      },
+      "setup": {
+        "working_dir": "{install_root}/mcp-bls",
+        "commands": ["npm install", "npm run build"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js", "npm"],
+        "windows": {
+          "command": "node.exe",
+          "args": ["{install_root}\\mcp-bls\\dist\\index.js"]
+        },
+        "macos": {
+          "command": "node",
+          "args": ["{install_root}/mcp-bls/dist/index.js"]
+        },
+        "secret_env": ["BLS_API_KEY"]
+      }
+    },
+    {
+      "id": "econ_ecb",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/scka-de/ecb-mcp.git",
+        "commit": "bc50c668b7dcf1269bef174ec25d8c693f56e112",
+        "checkout_dir": "ecb-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/ecb-mcp",
+        "commands": ["npm install", "npm run build"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js >=18", "npm"],
+        "windows": {
+          "command": "node.exe",
+          "args": ["{install_root}\\ecb-mcp\\dist\\index.js"]
+        },
+        "macos": {
+          "command": "node",
+          "args": ["{install_root}/ecb-mcp/dist/index.js"]
+        },
+        "secret_env": []
+      }
+    },
+    {
+      "id": "econ_eurostat",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/ano-kuhanathan/eurostat-mcp.git",
+        "commit": "c3a3dc6c1842a9c1b3fe2cf659658511ce1c8bcb",
+        "checkout_dir": "eurostat-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/eurostat-mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.10"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\eurostat-mcp", "run", "server.py"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/eurostat-mcp", "run", "server.py"]
+        },
+        "secret_env": []
+      }
+    },
+    {
+      "id": "econ_imf",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/c-cf/imf-data-mcp.git",
+        "commit": "316fcb14c33fc15afd54f6620a6a240143ef5d35",
+        "checkout_dir": "imf-data-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/imf-data-mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\imf-data-mcp", "run", "imf-data-mcp"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/imf-data-mcp", "run", "imf-data-mcp"]
+        },
+        "secret_env": []
+      }
+    },
+    {
+      "id": "econ_oecd",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/isakskogstad/OECD-MCP.git",
+        "commit": "81a5d488712791f3ce6e6fa6c7d94d11cea11e87",
+        "checkout_dir": "oecd-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/oecd-mcp",
+        "commands": ["npm install", "npm run build"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js >=18", "npm"],
+        "windows": {
+          "command": "node.exe",
+          "args": ["{install_root}\\oecd-mcp\\dist\\index.js"]
+        },
+        "macos": {
+          "command": "node",
+          "args": ["{install_root}/oecd-mcp/dist/index.js"]
+        },
+        "secret_env": []
+      }
+    },
+    {
+      "id": "econ_world_bank",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/anshumax/world_bank_mcp_server.git",
+        "commit": "f9763deab3d9de604878bb0daf710c46dc154fde",
+        "checkout_dir": "world_bank_mcp_server"
+      },
+      "setup": {
+        "working_dir": "{install_root}/world_bank_mcp_server",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\world_bank_mcp_server", "run", "world_bank_mcp_server"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/world_bank_mcp_server", "run", "world_bank_mcp_server"]
+        },
+        "secret_env": []
+      }
+    },
+    {
+      "id": "econ_world_bank_data360",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/worldbank/data360-mcp.git",
+        "commit": "872537a37db0e1d7041071ce7938ce43d19dc7b0",
+        "checkout_dir": "data360-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/data360-mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\data360-mcp", "run", "fastmcp", "run", "src/data360/server.py", "--transport", "stdio"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/data360-mcp", "run", "fastmcp", "run", "src/data360/server.py", "--transport", "stdio"]
+        },
+        "secret_env": [],
+        "non_secret_env": {
+          "DATA360_API_BASE_URL": "https://data360api.worldbank.org",
+          "DATA360_CODELIST_API_BASE_URL": "https://data360api.worldbank.org"
+        }
+      }
+    },
+    {
+      "id": "econ_un_comtrade",
+      "default_enabled": true,
+      "source": {
+        "type": "npm",
+        "url": "https://github.com/cyanheads/un-comtrade-mcp-server.git",
+        "commit": null,
+        "package": "@cyanheads/un-comtrade-mcp-server",
+        "version": "0.1.5",
+        "package_spec": "@cyanheads/un-comtrade-mcp-server@0.1.5"
+      },
+      "setup": {
+        "working_dir": null,
+        "commands": []
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js", "npm", "npx"],
+        "windows": {
+          "command": "npx.cmd",
+          "args": ["-y", "@cyanheads/un-comtrade-mcp-server@0.1.5"]
+        },
+        "macos": {
+          "command": "npx",
+          "args": ["-y", "@cyanheads/un-comtrade-mcp-server@0.1.5"]
+        },
+        "secret_env": ["COMTRADE_SUBSCRIPTION_KEY"],
+        "non_secret_env": {
+          "MCP_LOG_LEVEL": "info",
+          "MCP_TRANSPORT_TYPE": "stdio"
+        }
+      }
+    },
+    {
+      "id": "econ_alpha_vantage",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/alphavantage/alpha_vantage_mcp.git",
+        "commit": "85b772428439494ed5c4d6c98bbdfa35bfdee00b",
+        "checkout_dir": "alpha_vantage_mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/alpha_vantage_mcp/mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.13"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\alpha_vantage_mcp\\mcp", "run", "marketdata-mcp-server", "{secret:ALPHA_VANTAGE_API_KEY}"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/alpha_vantage_mcp/mcp", "run", "marketdata-mcp-server", "{secret:ALPHA_VANTAGE_API_KEY}"]
+        },
+        "secret_env": [],
+        "secret_arguments": ["ALPHA_VANTAGE_API_KEY"],
+        "security_note": "The current server accepts the key as a positional argument. Inject it locally at runtime; never persist the value in this repository or logs."
+      }
+    },
+    {
+      "id": "econ_bea",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/shawndrake2/mcp-bea.git",
+        "commit": "8343caa6807b85fa0edbb0fff254859bacbba97e",
+        "checkout_dir": "mcp-bea"
+      },
+      "setup": {
+        "working_dir": "{install_root}/mcp-bea",
+        "commands": ["npm install", "npm run build"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js", "npm"],
+        "windows": {
+          "command": "node.exe",
+          "args": ["{install_root}\\mcp-bea\\dist\\index.js"]
+        },
+        "macos": {
+          "command": "node",
+          "args": ["{install_root}/mcp-bea/dist/index.js"]
+        },
+        "secret_env": ["BEA_API_KEY"]
+      }
+    },
+    {
+      "id": "econ_census",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/uscensusbureau/us-census-bureau-data-api-mcp.git",
+        "commit": "5dcaa637871b9ded5dab415118f9008c06d13f2a",
+        "checkout_dir": "us-census-bureau-data-api-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/us-census-bureau-data-api-mcp",
+        "requirements": ["Docker Desktop", "Docker Compose", "Bash"],
+        "default_seed_mode": "slim",
+        "commands": [
+          "docker compose --profile prod build",
+          "docker compose --profile prod run --rm -e SEED_MODE=slim -e CENSUS_API_KEY census-mcp-db-init sh -c 'npm run migrate:up && npm run seed'",
+          "docker compose --profile prod up -d"
+        ],
+        "local_modifications_required": [
+          {
+            "file": "mcp-db/src/seeds/scripts/seed-runner.ts",
+            "description": "Append CENSUS_API_KEY only to api.census.gov requests and mask the key in logged URLs."
+          },
+          {
+            "file": "docker-compose.yml",
+            "description": "Pass CENSUS_API_KEY into the census-mcp-db-init service."
+          },
+          {
+            "file": "mcp-server/src/tools/fetch-aggregate-data.tool.ts",
+            "description": "Mask the key query parameter before logging attempted URLs."
+          }
+        ],
+        "verification": {
+          "expected_minimums": {
+            "datasets": 1769,
+            "data_tables": 3181,
+            "data_table_datasets": 35928,
+            "geographies": 3313,
+            "geography_years": 6592
+          },
+          "api_probe": "A minimal Census API request must return HTTP 200 before enabling the MCP."
+        }
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Docker Desktop", "Docker Compose", "Bash"],
+        "windows": {
+          "command": "bash.exe",
+          "args": ["{install_root}\\us-census-bureau-data-api-mcp\\scripts\\mcp-connect.sh"]
+        },
+        "macos": {
+          "command": "/bin/bash",
+          "args": ["{install_root}/us-census-bureau-data-api-mcp/scripts/mcp-connect.sh"]
+        },
+        "secret_env": ["CENSUS_API_KEY"],
+        "setup_env": ["SEED_MODE"]
+      }
+    },
+    {
+      "id": "econ_data_commons",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/datacommonsorg/agent-toolkit.git",
+        "commit": "be8d923b8d9fb43ab4b971f84e2b34c6700311e9",
+        "checkout_dir": "datacommons-agent-toolkit",
+        "source_subdir": "packages/datacommons-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/datacommons-agent-toolkit/packages/datacommons-mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11,<3.14"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\datacommons-agent-toolkit\\packages\\datacommons-mcp", "run", "datacommons-mcp", "serve", "stdio"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/datacommons-agent-toolkit/packages/datacommons-mcp", "run", "datacommons-mcp", "serve", "stdio"]
+        },
+        "secret_env": ["DC_API_KEY"]
+      }
+    },
+    {
+      "id": "econ_financial_datasets",
+      "default_enabled": false,
+      "disabled_reason": "FINANCIAL_DATASETS_API_KEY was not present in the inspected API Keys.txt labels.",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/financial-datasets/mcp-server.git",
+        "commit": "08e7a3dbb949d3d99bbd6d6f3a22e5f02973ec58",
+        "checkout_dir": "financial-datasets-mcp-server"
+      },
+      "setup": {
+        "working_dir": "{install_root}/financial-datasets-mcp-server",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\financial-datasets-mcp-server", "run", "server.py"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/financial-datasets-mcp-server", "run", "server.py"]
+        },
+        "secret_env": ["FINANCIAL_DATASETS_API_KEY"]
+      }
+    },
+    {
+      "id": "econ_fred",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/stefanoamorelli/fred-mcp-server.git",
+        "commit": "5262cd9cd2b7ba2018619d9320a0fe89f1107296",
+        "checkout_dir": "fred-mcp-server"
+      },
+      "setup": {
+        "working_dir": "{install_root}/fred-mcp-server",
+        "commands": ["npm install", "npm run build"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js", "npm"],
+        "windows": {
+          "command": "node.exe",
+          "args": ["{install_root}\\fred-mcp-server\\build\\index.js"]
+        },
+        "macos": {
+          "command": "node",
+          "args": ["{install_root}/fred-mcp-server/build/index.js"]
+        },
+        "secret_env": ["FRED_API_KEY"]
+      }
+    },
+    {
+      "id": "econ_nasdaq_data_link",
+      "default_enabled": false,
+      "disabled_reason": "NASDAQ_DATA_LINK_API_KEY was not present in the inspected API Keys.txt labels.",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/stefanoamorelli/nasdaq-data-link-mcp.git",
+        "commit": "ba0f129f2ef242b7267b5d1916f373cfdd08f32c",
+        "checkout_dir": "nasdaq-data-link-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/nasdaq-data-link-mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.13"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\nasdaq-data-link-mcp", "run", "python", "nasdaq_data_link_mcp_os/server.py"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/nasdaq-data-link-mcp", "run", "python", "nasdaq_data_link_mcp_os/server.py"]
+        },
+        "secret_env": ["NASDAQ_DATA_LINK_API_KEY"],
+        "path_env": {
+          "PYTHONPATH": "{install_root}/nasdaq-data-link-mcp"
+        }
+      }
+    },
+    {
+      "id": "econ_sec_edgar",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/stefanoamorelli/sec-edgar-mcp.git",
+        "commit": "c9726addaecec76f8a225f54e77d4ab955f8ddfb",
+        "checkout_dir": "sec-edgar-mcp"
+      },
+      "setup": {
+        "working_dir": "{install_root}/sec-edgar-mcp",
+        "commands": ["uv sync"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["uv", "Python >=3.11"],
+        "windows": {
+          "command": "uv.exe",
+          "args": ["--directory", "{install_root}\\sec-edgar-mcp", "run", "sec-edgar-mcp"]
+        },
+        "macos": {
+          "command": "uv",
+          "args": ["--directory", "{install_root}/sec-edgar-mcp", "run", "sec-edgar-mcp"]
+        },
+        "secret_env": [],
+        "sensitive_env": ["SEC_EDGAR_USER_AGENT"]
+      }
+    },
+    {
+      "id": "econ_tam",
+      "default_enabled": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/gvaibhav/TAM-MCP-Server.git",
+        "commit": "25030aa6f226164ee92c345df5262b5904c7327f",
+        "checkout_dir": "TAM-MCP-Server"
+      },
+      "setup": {
+        "working_dir": "{install_root}/TAM-MCP-Server",
+        "commands": ["npm install", "npm run build"]
+      },
+      "runtime": {
+        "transport": "stdio",
+        "requirements": ["Node.js >=18", "npm"],
+        "windows": {
+          "command": "node.exe",
+          "args": ["{install_root}\\TAM-MCP-Server\\dist\\stdio-simple.js"]
+        },
+        "macos": {
+          "command": "node",
+          "args": ["{install_root}/TAM-MCP-Server/dist/stdio-simple.js"]
+        },
+        "secret_env": [
+          "ALPHA_VANTAGE_API_KEY",
+          "BLS_API_KEY",
+          "CENSUS_API_KEY",
+          "FRED_API_KEY",
+          "NASDAQ_DATA_LINK_API_KEY"
+        ]
+      }
+    }
+  ]
+}

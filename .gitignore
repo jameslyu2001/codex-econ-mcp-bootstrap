@@ -1,0 +1,30 @@
+# Credentials and local Codex configuration must never enter Git.
+.env
+.env.*
+*.env
+secrets/
+API Keys.txt
+api keys.txt
+api_keys.txt
+apikeys.txt
+credentials.json
+credentials.toml
+config.toml
+config.toml.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local runtime and build output.
+.bootstrap-state/
+.venv/
+node_modules/
+dist/
+build/
+docker-data/
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
