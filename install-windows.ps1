@@ -351,7 +351,9 @@ function Register-Entries {
         [Environment]::SetEnvironmentVariable('CODEX_HOME', $CodexRoot, 'Process')
         foreach ($entry in $Entries) {
             $name = Get-EntryName $entry
-            if ($name -notmatch '^econ_[a-z0-9_]+$') { throw "Refusing to manage a non-econ MCP: $name" }
+            if ($name -notmatch '^econ_[a-z0-9_]+$' -and $name -ne 'stata-mcp') {
+                throw "Refusing to manage an unexpected MCP: $name"
+            }
             $keyMissing =
                 ($name -eq 'econ_financial_datasets' -and -not $Secrets.ContainsKey('FINANCIAL_DATASETS_API_KEY')) -or
                 ($name -eq 'econ_nasdaq_data_link' -and -not $Secrets.ContainsKey('NASDAQ_DATA_LINK_API_KEY'))
@@ -396,12 +398,14 @@ Require-File $launcherSource
 try { $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json }
 catch { throw "Manifest JSON is invalid: $($_.Exception.Message)" }
 $entries = @(Get-Entries $manifest)
-if ($entries.Count -ne 17) { throw "Manifest must contain 17 MCP entries; found $($entries.Count)." }
+if ($entries.Count -ne 18) { throw "Manifest must contain 18 MCP entries; found $($entries.Count)." }
 $entryNames = @($entries | ForEach-Object { Get-EntryName $_ })
-if (@($entryNames | Select-Object -Unique).Count -ne 17) { throw 'Manifest contains duplicate MCP names.' }
+if (@($entryNames | Select-Object -Unique).Count -ne 18) { throw 'Manifest contains duplicate MCP names.' }
 foreach ($entry in $entries) {
     $name = Get-EntryName $entry
-    if ($name -notmatch '^econ_[a-z0-9_]+$') { throw "Manifest contains a non-econ MCP: $name" }
+    if ($name -notmatch '^econ_[a-z0-9_]+$' -and $name -ne 'stata-mcp') {
+        throw "Manifest contains an unexpected MCP: $name"
+    }
     $sourceType = if ($entry.source.type) { [string]$entry.source.type } else { [string]$entry.source.kind }
     if ($sourceType -eq 'git') {
         $commitProperty = $entry.source.PSObject.Properties['commit']

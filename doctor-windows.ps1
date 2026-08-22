@@ -45,7 +45,9 @@ $checks = @(
     @('directory', 'econ_nasdaq_data_link source', (Join-Path $mcpRoot 'nasdaq-data-link-mcp')),
     @('directory', 'econ_sec_edgar source', (Join-Path $mcpRoot 'sec-edgar-mcp')),
     @('directory', 'econ_tam source', (Join-Path $mcpRoot 'TAM-MCP-Server')),
-    @('file', 'econ_tam entry point', (Join-Path $mcpRoot 'TAM-MCP-Server\dist\stdio-simple.js'))
+    @('file', 'econ_tam entry point', (Join-Path $mcpRoot 'TAM-MCP-Server\dist\stdio-simple.js')),
+    @('directory', 'stata-mcp source', (Join-Path $mcpRoot 'mcp-for-stata')),
+    @('directory', 'stata-mcp environment', (Join-Path $mcpRoot 'mcp-for-stata\.venv'))
 )
 
 foreach ($check in $checks) {
@@ -56,6 +58,14 @@ foreach ($check in $checks) {
     }
     $status = if ($present) { 'PRESENT' } else { 'MISSING' }
     Write-Output ('{0,-8} {1}' -f $status, $check[1])
+}
+
+$stataProject = Join-Path $mcpRoot 'mcp-for-stata'
+$uvCommand = Get-Command 'uv.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($null -ne $uvCommand -and (Test-Path -LiteralPath (Join-Path $stataProject '.venv') -PathType Container)) {
+    & $uvCommand.Source --directory $stataProject run --frozen stata-mcp doctor --check stata_cli --json 2>$null | Out-Null
+    $status = if ($LASTEXITCODE -eq 0) { 'PRESENT' } else { 'MISSING' }
+    Write-Output ('{0,-8} stata-mcp can locate Stata' -f $status)
 }
 
 $credentialNames = @{}
