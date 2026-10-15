@@ -2,7 +2,7 @@
 
 这是一个跨 Windows 与 macOS 的 Codex 经济数据 MCP 安装仓库。它会按 lock manifest 安装 18 个 MCP、导入本机 API key、初始化 Census 数据库，并通过官方 `codex mcp add` 写入 `~/.codex/config.toml`。
 
-> 本仓库是私有的，但仍然不保存任何真实 API key。密钥只从每台电脑的本地文件或隐藏输入导入，并写到 `~/.codex/secrets/econ-mcp.env`。
+> 本仓库公开可读，不保存任何真实 API key。密钥只从每台电脑的本地文件或隐藏输入导入，并写到 `~/.codex/secrets/econ-mcp.env`。
 
 ## 收录的 MCP
 
@@ -18,7 +18,7 @@
 两种平台均需安装：
 
 - Codex CLI、Git、Node.js 18+、npm/npx、Python、`uv`/`uvx`
-- GitHub CLI `gh`，且已登录有权访问本私有仓库的账户
+- GitHub CLI `gh`，用于下方克隆命令；也可直接使用 Git 克隆公开仓库
 - Docker Desktop 与 Docker Compose v2，用于 `econ_census`
 - Python 3.11+ 与已授权的 Stata，用于 `stata-mcp`
 
